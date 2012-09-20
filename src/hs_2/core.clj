@@ -98,15 +98,13 @@
       (app (-> req (assoc :headings headings) (dissoc :html-body))))))
 
 (defn counter
-  [heading]
-  (let [k (first (keys heading))
-        heading-text (heading k)
-        vowel-count (map (fn [scentence]
+  [[heading heading-text]]
+  (let [vowel-count (map (fn [scentence]
                            (let [scentence-seq (seq (char-array (lower-case scentence)))
                                  heading-vowels (filter char? (map #{\a \e \i \o \u} scentence-seq))]
                              (count heading-vowels)))
                          heading-text)]
-    {k (map (fn [count text] [count text])
+    {heading (map (fn [count text] [count text])
                   vowel-count
                   heading-text)}))
 
