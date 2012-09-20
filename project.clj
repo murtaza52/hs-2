@@ -27,4 +27,3 @@
 
                          )}
   :resource-paths ["resources/public"])
-

@@ -1,6 +1,7 @@
 (ns hs-2.core
   (:use [clj-time.core :only [now interval within? plus minus secs]]
-        [net.cgrand.enlive-html :only [deftemplate content html-content defsnippet clone-for html-resource]])
+        [net.cgrand.enlive-html :only [deftemplate content html-content defsnippet clone-for html-resource]]
+        [clojure.string :only [lower-case]])
   (:require [clj-http.client :as client]
             [clojurewerkz.urly.core :as urly]
             [net.cgrand.enlive-html :as en]))
@@ -27,7 +28,10 @@
   "Returns true if the domain has been requested atleast twice in last 5 secs"
   [app]
   (fn [{:keys [domain-name] :as req}]
-    (let [second-last-req-time (-> @visited-domains (get domain-name) (nth 1))]
+    (let [second-last-req-time (->
+                                @visited-domains
+                                (get domain-name)
+                                (nth 1))]
       (when (in-last-5? (now))
         (Thread/sleep 5000))
       (app req))))
@@ -47,7 +51,7 @@
   [app]
   (fn [{:keys [url] :as req}]
     (if-let [scheme (#{"http" "https"} (urly/protocol-of url))]
-      (app (assoc req :url-schemes scheme))
+      (app (assoc req :url-scheme scheme))
       (assoc req :url-scheme nil :error-msg "The URL is not of http scheme. The URL should start either with http or https."))))
 
 (defn request-url
@@ -78,14 +82,45 @@
   (fn [[headings, data]]
     (let [nodes (en/select data [selector])
           text-col (map en/text nodes)]
-      (assoc headings selector text-col))))
+      [(assoc headings selector text-col), data])))
 
 (def heading-selectors (map get-selector-func [:h1 :h2 :h3 :h4 :h5 :h6]))
+
+(defn get-headings
+  [html-body]
+  (let [data (en/html-snippet html-body)]
+    (reduce (fn [v f] (f v)) [{} data] heading-selectors)))
+
+(defn wrap-get-headings
+  [app]
+  (fn [{:keys [html-body] :as req}]
+    (let [headings (first (get-headings html-body))]
+      (app (-> req (assoc :headings headings) (dissoc :html-body))))))
+
+(defn count-vowels
+  [headings]
+  (map counter headings ))
+
+(defn counter
+  [heading]
+  (let [k (first (keys heading))
+        vs (first (vals heading))]
+    (map (fn [scentence]
+           (let [scentence-seq (seq (char-array (lower-case scentence)))]
+             (count (map #{\a \e \i \o \u} scentence-seq))))
+         vs)))
+
+(defn wrap-count-vowels
+  [app]
+  (fn [{:keys [headings] :as req}]
+    (let [headings-with-count (count-vowels headings)]
+      (app (assoc req :headings headings-with-count)))))
 
 (defn process-request
   []
   (-> identity
-      ;;wrap-throttle-req
+      wrap-get-headings
       wrap-get-html
+      ;;wrap-throttle-req
       wrap-get-domain
       wrap-http-scheme))
