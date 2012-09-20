@@ -14,7 +14,7 @@
                  [org.bovinegenius/exploding-fish "0.3.0"]]
   :profiles {:dev {:dependencies [[ring-serve "0.1.2" :exclusions [ring/ring-devel ring/ring-jetty-adapter]]
                                   [ring-mock "0.1.3"]
-                                  [clj-ns-browser "1.3.0"]
+                                  ;[clj-ns-browser "1.3.0"]
                                   [ritz/ritz-debugger "0.4.2"]
                                   [ritz/ritz-repl-utils "0.4.2"]]}}
   :ring {:handler hs-ex.routes/my-app}

@@ -97,28 +97,29 @@
     (let [headings (first (get-headings html-body))]
       (app (-> req (assoc :headings headings) (dissoc :html-body))))))
 
-(defn count-vowels
-  [headings]
-  (map counter headings ))
-
 (defn counter
   [heading]
   (let [k (first (keys heading))
-        vs (first (vals heading))]
-    (map (fn [scentence]
-           (let [scentence-seq (seq (char-array (lower-case scentence)))]
-             (count (map #{\a \e \i \o \u} scentence-seq))))
-         vs)))
+        heading-text (heading k)
+        vowel-count (map (fn [scentence]
+                           (let [scentence-seq (seq (char-array (lower-case scentence)))
+                                 heading-vowels (filter char? (map #{\a \e \i \o \u} scentence-seq))]
+                             (count heading-vowels)))
+                         heading-text)]
+    {k (map (fn [count text] [count text])
+                  vowel-count
+                  heading-text)}))
 
 (defn wrap-count-vowels
   [app]
   (fn [{:keys [headings] :as req}]
-    (let [headings-with-count (count-vowels headings)]
+    (let [headings-with-count (map counter headings)]
       (app (assoc req :headings headings-with-count)))))
 
 (defn process-request
   []
   (-> identity
+      wrap-count-vowels
       wrap-get-headings
       wrap-get-html
       ;;wrap-throttle-req
