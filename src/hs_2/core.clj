@@ -121,6 +121,14 @@
     (swap! all-headings #(merge-with concat % headings))
     (app @all-headings)))
 
+(defn sort-headers
+  [headings]
+  (let [h-vec (map identity headings)
+        h-with-headers (map (fn [[k v]]
+                              (map #(conj % k) v))
+                            h-vec)]
+    h-with-headers))
+
 (defn process-request
   []
   (-> identity
