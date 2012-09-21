@@ -124,7 +124,7 @@
 (defn sort-headers
   [headings]
   (let [h-vec (map identity headings)
-        h-with-headers (map (fn [[k v]]
+        h-with-headers (mapcat (fn [[k v]]
                               (map #(conj % k) v))
                             h-vec)]
     h-with-headers))
