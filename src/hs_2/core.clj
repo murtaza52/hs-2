@@ -6,6 +6,7 @@
             [clojurewerkz.urly.core :as urly]
             [net.cgrand.enlive-html :as en]))
 
+(def all-headings (atom {}))
 
 (def first-time (now))
 (def second-time (plus (now) (secs 2)))
@@ -98,25 +99,32 @@
       (app (-> req (assoc :headings headings) (dissoc :html-body))))))
 
 (defn counter
-  [[heading heading-text]]
+  [h-map [heading heading-text]]
   (let [vowel-count (map (fn [scentence]
                            (let [scentence-seq (seq (char-array (lower-case scentence)))
                                  heading-vowels (filter char? (map #{\a \e \i \o \u} scentence-seq))]
                              (count heading-vowels)))
                          heading-text)]
-    {heading (map (fn [count text] [count text])
-                  vowel-count
-                  heading-text)}))
+    (assoc h-map heading (map (fn [count text] [count text])
+                              vowel-count
+                              heading-text))))
 
 (defn wrap-count-vowels
   [app]
   (fn [{:keys [headings] :as req}]
-    (let [headings-with-count (map counter headings)]
+    (let [headings-with-count (reduce counter {} headings)]
       (app (assoc req :headings headings-with-count)))))
+
+(defn wrap-save-headings
+  [app]
+  (fn [{:keys [headings] :as req}]
+    (swap! all-headings #(merge-with concat % headings))
+    (app @all-headings)))
 
 (defn process-request
   []
   (-> identity
+      wrap-save-headings
       wrap-count-vowels
       wrap-get-headings
       wrap-get-html

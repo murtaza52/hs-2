@@ -12,18 +12,18 @@
                  [org.thnetos/cd-client "0.3.4" :exclusions [[org.clojure/clojure] cheshire]]
                  [clojurewerkz/urly "1.0.0"]
                  [org.bovinegenius/exploding-fish "0.3.0"]]
-  :profiles {:dev {:dependencies [[ring-serve "0.1.2" :exclusions [ring/ring-devel ring/ring-jetty-adapter]]
+  :profiles {:dev {:dependencies [[ring-serve "0.1.2"]
                                   [ring-mock "0.1.3"]
                                   ;[clj-ns-browser "1.3.0"]
                                   [ritz/ritz-debugger "0.4.2"]
                                   [ritz/ritz-repl-utils "0.4.2"]]}}
-  :ring {:handler hs-ex.routes/my-app}
+  :ring {:handler hs-2.routes/my-app}
   :repl-options {:init-ns hs-2.core
                  :init (do
-                         (use 'hs-2.core) ;(use 'clj-time.core)
-                         ;(use 'ring.util.serve)
-                         ;(serve hs-ex.routes/my-app)
-                                        ;(use 'ring.mock.request)
-
+                         ;(use 'hs-2.core)
+                         (use 'ring.util.serve)
+                         (serve 'hs-2.routes/my-app)
+                         ;(use 'ring.mock.request)
                          )}
-  :resource-paths ["resources/public"])
+  :resource-paths ["resources/public"]
+  :pedantic :warn)
