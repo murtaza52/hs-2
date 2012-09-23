@@ -1,7 +1,6 @@
 (ns hs-2.core-test
-  (:use clojure.test
-        hs-2.core))
+  (:use midje.sweet)
+  (:use hs-2.core))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(fact ((process-request){:url "llp://usee.com"}) =>
+      {:error-msg "The URL is not of http scheme. The URL should start either with http or https.", :url-scheme nil, :url "llp://usee.com"})

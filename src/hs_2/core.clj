@@ -8,14 +8,22 @@
 
 (def all-headings (atom {}))
 
-(def first-time (now))
-(def second-time (plus (now) (secs 2)))
-(def third-time (plus (now) (secs 6)))
+(def visited-domains (atom {}))
 
-(def visited-domains (atom
-             { "invoize" [second-time first-time]
-              "github" [third-time first-time]
-              }))
+(def prohibited-domains (atom #{"prohib.com"}))
+
+(defn wrap-check-prohibited-domains
+  [app]
+  (fn [{:keys [domain-name] :as req}]
+    (if-let [prohibited? (@prohibited-domains domain-name)]
+      (assoc req :error-msg "Beware!! Clojure on Guard ! Thats a prohibited domain.")
+      (app req))))
+
+(defn defdomain
+  [domain-name]
+  (swap! prohibited-domains #(conj % domain-name)))
+
+(defdomain "prohib2.com")
 
 (defn in-last-5?
   "Returns true if the given-time is between the start-time and the end-time"
@@ -29,12 +37,10 @@
   "Returns true if the domain has been requested atleast twice in last 5 secs"
   [app]
   (fn [{:keys [domain-name] :as req}]
-    (let [second-last-req-time (->
-                                @visited-domains
-                                (get domain-name)
-                                (nth 1))]
-      (when (in-last-5? (now))
-        (Thread/sleep 5000))
+    (if-let [second-last-req-time (-> @visited-domains (get domain-name) (nth 1 nil))]
+      (when (in-last-5? (first second-last-req-time))
+        ;(Thread/sleep 5000)
+        (app req))
       (app req))))
 
 (defn wrap-get-domain
@@ -63,10 +69,12 @@
     (when html?
       (html-resource body))))
 
-(defn wrap-add-domain-request-time
+(defn wrap-add-request-time
   [app]
   (fn [{:keys [domain-name] :as req}]
-    "g"))
+    (let [new-value (merge-with conj @visited-domains {domain-name [(now)]})]
+          (reset! visited-domains new-value)
+          (app req))))
 
 (defn wrap-get-html
   [app]
@@ -100,9 +108,9 @@
 
 (defn counter
   [h-map [heading heading-text]]
-  (let [vowel-count (map (fn [scentence]
-                           (let [scentence-seq (seq (char-array (lower-case scentence)))
-                                 heading-vowels (filter char? (map #{\a \e \i \o \u} scentence-seq))]
+  (let [vowel-count (map (fn [text]
+                           (let [text-seq (seq (char-array (lower-case text)))
+                                 heading-vowels (filter char? (map #{\a \e \i \o \u} text-seq))]
                              (count heading-vowels)))
                          heading-text)]
     (assoc h-map heading (map (fn [count text] [count text])
@@ -125,17 +133,30 @@
   [headings]
   (let [h-vec (map identity headings)
         h-with-headers (mapcat (fn [[k v]]
-                              (map #(conj % k) v))
-                            h-vec)]
-    h-with-headers))
+                                 (map #(conj % k) v))
+                               h-vec)
+        sorted-h (sort-by #(first %) h-with-headers)]
+    (reverse sorted-h)))
+
+(defn get-all-headings
+  []
+  (sort-headers @all-headings))
+
+(defn wrap-sort-headers
+  [app]
+  (fn [all-headings]
+    (app (sort-headers all-headings))))
 
 (defn process-request
   []
   (-> identity
+      wrap-sort-headers
       wrap-save-headings
       wrap-count-vowels
       wrap-get-headings
       wrap-get-html
-      ;;wrap-throttle-req
+      wrap-add-request-time
+      wrap-throttle-req
+      wrap-check-prohibited-domains
       wrap-get-domain
       wrap-http-scheme))

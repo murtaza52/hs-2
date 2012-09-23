@@ -16,13 +16,14 @@
                                   [ring-mock "0.1.3"]
                                   ;[clj-ns-browser "1.3.0"]
                                   [ritz/ritz-debugger "0.4.2"]
-                                  [ritz/ritz-repl-utils "0.4.2"]]}}
+                                  [ritz/ritz-repl-utils "0.4.2"]
+                                  [midje "1.4.0"]]}}
   :ring {:handler hs-2.routes/my-app}
   :repl-options {:init-ns hs-2.core
                  :init (do
                          ;(use 'hs-2.core)
-                         (use 'ring.util.serve)
-                         (serve 'hs-2.routes/my-app)
+                         ;(use 'ring.util.serve)
+                         ;(serve 'hs_2.routes/my-app)
                          ;(use 'ring.mock.request)
                          )}
   :resource-paths ["resources/public"]
