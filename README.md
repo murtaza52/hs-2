@@ -6,7 +6,7 @@ A parsing app ....
 
 2) Any url with a non http scheme (other than http or https) will result in an error message. llo://github.com will cause an error message to be shown.
 
-3) If the content returned is not html then an error message will be displayed. 
+3) If the content returned is not html then an error message will be displayed. ex http://feeds.washingtonpost.com/rss/politics
 
 4) If an url with the same domain name is requested more than twice in 5 secs, then the fetching is throttled - the url is fetched after a delay of 5 secs.
 
