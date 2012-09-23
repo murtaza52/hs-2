@@ -39,7 +39,7 @@
   (fn [{:keys [domain-name] :as req}]
     (if-let [second-last-req-time (-> @visited-domains (get domain-name) (nth 1 nil))]
       (when (in-last-5? (first second-last-req-time))
-        ;(Thread/sleep 5000)
+        (Thread/sleep 5000)
         (app req))
       (app req))))
 
@@ -59,7 +59,7 @@
   (fn [{:keys [url] :as req}]
     (if-let [scheme (#{"http" "https"} (urly/protocol-of url))]
       (app (assoc req :url-scheme scheme))
-      (assoc req :url-scheme nil :error-msg "The URL is not of http scheme. The URL should start either with http or https."))))
+      (assoc req :url-scheme nil :error-msg "Boy dont you know how to write an HTTP scheme URL ? It starts with HTTP or HTTPS !"))))
 
 (defn request-url
   [url]
@@ -84,7 +84,7 @@
           html? (is-html? resp)]
       (if html?
         (-> req (assoc :html-body body) (assoc :is-html? html?) app)
-        (-> req (assoc :is-html? html?) (assoc :error-msg "The content-type of the response is not HTML"))))))
+        (-> req (assoc :is-html? html?) (assoc :error-msg "Ooops !! That content type is definitely not HTML !!"))))))
 
 (defn get-selector-func
   [selector]
