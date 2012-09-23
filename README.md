@@ -10,7 +10,7 @@ A parsing app ....
 
 4) If an url with the same domain name is requested more than twice in 5 secs, then the fetching is throttled - the url is fetched after a delay of 5 secs.
 
-5) A defdomain function can be defined with a prohibited domain, and all requests to such a domain will be blocked.
+5) A defdomain function can be defined with a prohibited domain, and all requests to such a domain will be blocked. ex http://prohib2.com
 
 6) lein2 midje results in running of a midje test.
 
