@@ -2,7 +2,7 @@
 
 A parsing app ....
 
-1) Enter a valid url http://github.com to fetch a url. (Plain domain names github.com result in unhandled exceptions)
+1) Enter a valid url http://github.com to fetch a url. (Plain domain names such as 'github.com' results in an unhandled exception. Also a non existent url such as http://githuuub.com results in an unhandled exception.)
 
 2) Any url with a non http scheme (other than http or https) will result in an error message. llo://github.com will cause an error message to be shown.
 
