@@ -1,10 +1,27 @@
 # hs-2
 
-A Clojure library designed to ... well, that part is up to you.
+A parsing app ....
+
+1) Enter a valid url http://github.com to fetch a url. (Plain domain names github.com result in unhandled exceptions)
+
+2) Any url with a non http scheme (other than http or https) will result in an error message. llo://github.com will cause an error message to be shown.
+
+3) If the content returned is not html then an error message will be displayed. 
+
+4) If an url with the same domain name is requested more than twice in 5 secs, then the fetching is throttled - the url is fetched after a delay of 5 secs.
+
+5) A defdomain function can be defined with a prohibited domain, and all requests to such a domain will be blocked.
+
+6) lein2 midje results in running of a midje test.
+
 
 ## Usage
 
-FIXME
+clone the repo
+
+lein2 deps
+
+lein2 ring sever
 
 ## License
 
