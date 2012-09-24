@@ -8,7 +8,7 @@ A parsing app ....
 
 3) If the content returned is not html then an error message will be displayed. ex http://feeds.washingtonpost.com/rss/politics
 
-4) If an url with the same domain name is requested more than twice in 5 secs, then the fetching is throttled - the url is fetched after a delay of 5 secs on the third attempt. (There is a known bug which affects the fetching on the fourth attempt)
+4) If an url with the same domain name is requested more than twice in 5 secs, then the fetching is throttled - the url is fetched after a delay of 5 secs on the third attempt under 5 secs. (There is a known bug which affects the fetching on the fourth attempt)
 
 5) A defdomain function can be defined with a prohibited domain, and all requests to such a domain will be blocked. ex http://prohib2.com
 
