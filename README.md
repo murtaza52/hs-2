@@ -21,7 +21,7 @@ clone the repo
 
 lein2 deps
 
-lein2 ring sever
+lein2 ring server
 
 ## License
 
