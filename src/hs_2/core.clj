@@ -51,8 +51,9 @@
 
 (defn is-html?
   [resp]
-  (let [content-type (-> resp :headers (get "content-type"))]
-    (re-find #"text/html" content-type)))
+  (if-let [content-type (-> resp :headers (get "content-type"))]
+    (re-find #"text/html" content-type)
+    "text/html")) ;Assume the default content-type to be content-html.
 
 (defn wrap-http-scheme
   [app]
