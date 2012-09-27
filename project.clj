@@ -17,7 +17,8 @@
                                   ;[clj-ns-browser "1.3.0"]
                                   [ritz/ritz-debugger "0.4.2"]
                                   [ritz/ritz-repl-utils "0.4.2"]
-                                  [midje "1.4.0"]]}}
+                                  [midje "1.4.0" :exclusions [org.clojure/clojure]
+                                   [lein-midje "1.0.10"]]]}}
   :ring {:handler hs-2.routes/my-app}
   :repl-options {:init-ns hs-2.core
                  :init (do
