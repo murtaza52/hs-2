@@ -17,15 +17,15 @@
                                   ;[clj-ns-browser "1.3.0"]
                                   [ritz/ritz-debugger "0.4.2"]
                                   [ritz/ritz-repl-utils "0.4.2"]
-                                  [midje "1.4.0" :exclusions [org.clojure/clojure]
-                                   [lein-midje "1.0.10"]]]}}
+                                  [midje "1.4.0" :exclusions [org.clojure/clojure]]
+                                  [lein-midje "1.0.10"]]}}
   :ring {:handler hs-2.routes/my-app}
   :repl-options {:init-ns hs-2.core
                  :init (do
-                         ;(use 'hs-2.core)
-                         ;(use 'ring.util.serve)
-                         ;(serve 'hs_2.routes/my-app)
-                         ;(use 'ring.mock.request)
+                         (use 'hs-2.routes)
+                         (use 'ring.util.serve)
+                         (serve my-app)
+                         (use 'ring.mock.request)
                          )}
   :resource-paths ["resources/public"]
   :pedantic :warn)
