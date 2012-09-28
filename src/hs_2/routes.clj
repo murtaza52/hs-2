@@ -8,7 +8,9 @@
         [ring.middleware.keyword-params :only [wrap-keyword-params]]
         [ring.util.response :only [response status redirect]]
         [clojure.pprint :only [pprint]]
-        [hs-2.core :only [process-request]]))
+        [hs-2.core :only [process-request]]
+        [clj-airbrake.core :only [notify]]
+        [clj-airbrake.ring :only [request-to-message]]))
 
 (def prev-h (atom nil))
 
@@ -16,7 +18,7 @@
   [app flag]
   (fn [req]
     (when flag (do (println "******************************************** Request Map ***********************************************")
-                   (pprint req)
+                   (println req)
                    (println "******************************************** Response Map ***********************************************")))
     (app req)))
 
@@ -49,6 +51,19 @@
   (fn [req]
     (-> (index-page headings errors) response)))
 
+(defn wrap-exception
+  [app]
+  (fn [req]
+     (try (app req)
+          (catch Exception e
+            (do (.printStackTrace e)
+                (notify "571bda5bb0d6ee4595b0432339a151fc"
+                        "production"
+                        (System/getProperty "user.dir")
+                        e
+                        (request-to-message req))
+                (-> "Error Man" response (status 500)))))))
+
 (defn fetch-url
   []
   (fn [req]
@@ -59,7 +74,8 @@
       (-> (index-page table-data errors) response))))
 
 (def my-app (app
-             (wrap-logger false)
+             wrap-exception
+             (wrap-logger true)
              wrap-keyword-params
              wrap-params
              wrap-file-info

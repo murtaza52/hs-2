@@ -11,7 +11,7 @@
                  [clj-http "0.5.3"]
                  [org.thnetos/cd-client "0.3.4" :exclusions [[org.clojure/clojure] cheshire]]
                  [clojurewerkz/urly "1.0.0"]
-                 [org.bovinegenius/exploding-fish "0.3.0"]]
+                 [clj-airbrake "2.0.0"]]
   :profiles {:dev {:dependencies [[ring-serve "0.1.2"]
                                   [ring-mock "0.1.3"]
                                   ;[clj-ns-browser "1.3.0"]
